@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const weatherAppRouter = require("./routes/weatherapp");
 const openWeatherRouter = require("./routes/openweather");
+const { connectDB } = require("./utilities/db");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,4 +21,5 @@ app.get("/", (req, res) => {
 
 app.listen(PORT, () => {
     console.log(`Server listening on port: ${PORT}`);
+    //connectDB();
 });
