@@ -14,8 +14,8 @@ router.get("/", async (req, res) => {
         });
     }
 
-    const resp = await getCurrentWeatherByLonAndLat({ lat, lon });
-    res.send(resp);
+    const response = await getCurrentWeatherByLonAndLat({ lat, lon });
+    res.send(response);
 });
 
 router.get("/zip", async (req, res) => {
@@ -40,14 +40,15 @@ router.get("/zip", async (req, res) => {
 });
 
 async function getCurrentWeatherByLonAndLat({ lat, lon }) {
-    const response = await fetch(
+    const weatherData = await fetch(
         `${openWeatherBaseUrl}?` +
             `lat=${lat}&lon=${lon}&` +
             `appid=${openWeatherAPIKey}&` +
             `units=imperial`
     );
 
-    return await response.json();
+    const response = await weatherData.json();
+    return formatCurrentWeatherResponseForFrontend(response);
 }
 
 async function getGeocodeLocationFromZip({ zipcode, countryCode }) {
@@ -61,7 +62,15 @@ async function getGeocodeLocationFromZip({ zipcode, countryCode }) {
 }
 
 function formatCurrentWeatherResponseForFrontend(weatherData) {
-    let response = {};
+    let response = {
+        temp: weatherData.main.temp,
+        humidity: weatherData.main.humidity,
+        windSpeed: weatherData.wind.speed,
+        description: weatherData.weather.main,
+        iconUrl: `https://openweathermap.org/img/wn/${weatherData.weather[0].icon}.png`,
+    };
+
+    return response;
 }
 
 module.exports = router;
