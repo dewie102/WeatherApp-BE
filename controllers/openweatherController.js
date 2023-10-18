@@ -16,6 +16,13 @@ exports.openweather_current_weather_coords = async (req, res) => {
   }
 
   const response = await getCurrentWeatherByLonAndLat({ lat, lon });
+
+  if (Object.hasOwn(response, "cod") && response.cod !== 200) {
+    return res.status(parseInt(response.cod)).json({
+      error: response.message,
+    });
+  }
+
   const formatted = formatCurrentWeatherResponseForFrontend(response);
   res.send([formatted]);
 };
@@ -60,7 +67,17 @@ exports.openweather_current_airpollution = async (req, res) => {
     });
   }
 
-  res.send({ airPollution: await getCurrentAirPollution({ lat, lon }) });
+  const response = await getCurrentAirPollution({ lat, lon });
+
+  if (Object.hasOwn(response, "cod") && response.cod !== 200) {
+    return res.status(parseInt(response.cod)).json({
+      error: response.message,
+    });
+  }
+
+  const airPollution = getPollutionIndexName(response.list[0].main.aqi);
+
+  res.send({ airPollution });
 };
 
 exports.openweather_forecast_weather_coords = async (req, res) => {
@@ -79,6 +96,13 @@ exports.openweather_forecast_weather_coords = async (req, res) => {
   }
 
   const response = await getForecastWeatherByLonAndLat({ lat, lon, count });
+
+  // For some reason this response has a cod of 200 as a string
+  if (Object.hasOwn(response, "cod") && response.cod !== "200") {
+    return res.status(parseInt(response.cod)).json({
+      error: response.message,
+    });
+  }
 
   result = [];
   response.list.forEach((dataPoint) => {
@@ -109,7 +133,7 @@ async function getCurrentAirPollution({ lat, lon }) {
   );
 
   const response = await airPollution.json();
-  return getPollutionIndexName(response.list[0].main.aqi);
+  return response;
 }
 
 async function getGeocodeLocationFromZip({ zipcode, countryCode }) {
