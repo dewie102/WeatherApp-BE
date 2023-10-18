@@ -40,17 +40,13 @@ exports.openweather_lon_lat_by_zip = async (req, res) => {
     countryCode,
   });
 
-  let result = {};
-  if (response.cod === "404") {
-    result = {
-      error:
-        "Provided zipcode is not valid, please provide a valid 5 digit zipcode",
-    };
-  } else {
-    result = { lat: response.lat, lon: response.lon };
+  if (Object.hasOwn(response, "cod")) {
+    return res.status(parseInt(response.cod)).json({
+      error: response.message,
+    });
   }
 
-  res.send(result);
+  res.send({ lat: response.lat, lon: response.lon });
 };
 
 exports.openweather_current_airpollution = async (req, res) => {
