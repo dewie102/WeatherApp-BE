@@ -1,4 +1,4 @@
-const openWeatherBaseUrl = "https://api.openweathermap.org/data/2.5/weather";
+const openWeatherBaseUrl = "https://api.openweathermap.org/data/2.5";
 const geocodeBaseURL = "http://api.openweathermap.org/geo/1.0";
 const airPollutionBaseURL =
   "http://api.openweathermap.org/data/2.5/air_pollution";
@@ -16,7 +16,8 @@ exports.openweather_current_weather_coords = async (req, res) => {
   }
 
   const response = await getCurrentWeatherByLonAndLat({ lat, lon });
-  res.send(response);
+  const formatted = formatCurrentWeatherResponseForFrontend(response);
+  res.send([formatted]);
 };
 
 exports.openweather_lon_lat_by_zip = async (req, res) => {
@@ -66,16 +67,42 @@ exports.openweather_current_airpollution = async (req, res) => {
   res.send({ airPollution: await getCurrentAirPollution({ lat, lon }) });
 };
 
+exports.openweather_forecast_weather_coords = async (req, res) => {
+  let { lat, lon, count } = req.query;
+
+  console.log("Hit openweather backend API, Hourly");
+
+  if (!lat || !lon) {
+    return res.status(400).json({
+      error: "You need to provide both lat and lon of location",
+    });
+  }
+
+  if (!count) {
+    count = 4;
+  }
+
+  const response = await getForecastWeatherByLonAndLat({ lat, lon, count });
+
+  result = [];
+  response.list.forEach((dataPoint) => {
+    const formatted = formatCurrentWeatherResponseForFrontend(dataPoint);
+    result.push(formatted);
+  });
+
+  res.send(result);
+};
+
 async function getCurrentWeatherByLonAndLat({ lat, lon }) {
   const weatherData = await fetch(
-    `${openWeatherBaseUrl}?` +
+    `${openWeatherBaseUrl}/weather?` +
       `lat=${lat}&lon=${lon}&` +
       `appid=${openWeatherAPIKey}&` +
       `units=imperial`
   );
 
   const response = await weatherData.json();
-  return formatCurrentWeatherResponseForFrontend(response);
+  return response;
 }
 
 async function getCurrentAirPollution({ lat, lon }) {
@@ -99,6 +126,18 @@ async function getGeocodeLocationFromZip({ zipcode, countryCode }) {
   return await response.json();
 }
 
+async function getForecastWeatherByLonAndLat({ lat, lon, count }) {
+  const weatherData = await fetch(
+    `${openWeatherBaseUrl}/forecast?` +
+      `lat=${lat}&lon=${lon}&` +
+      `appid=${openWeatherAPIKey}&` +
+      `units=imperial&` +
+      `cnt=${count}`
+  );
+
+  return await weatherData.json();
+}
+
 function formatCurrentWeatherResponseForFrontend(weatherData) {
   let response = {
     temp: weatherData.main.temp,
@@ -106,6 +145,7 @@ function formatCurrentWeatherResponseForFrontend(weatherData) {
     windSpeed: weatherData.wind.speed,
     description: weatherData.weather[0].main,
     iconUrl: `https://openweathermap.org/img/wn/${weatherData.weather[0].icon}.png`,
+    datetime: weatherData.dt_txt,
   };
 
   return response;
