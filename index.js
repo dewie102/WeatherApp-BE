@@ -13,15 +13,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-app.use("/api/weatherapp/", weatherAppRouter);
+app.use("/api/weatherapp", weatherAppRouter);
 app.use("/api/weatherapp/openweather", openWeatherRouter);
 app.use("/api/weatherapp/nationalalerts", nationalAlertsRouter);
 
 app.get("/", (req, res) => {
-  res.send("Hello World");
+    res.send("Hello World");
 });
 
 app.listen(PORT, () => {
-  console.log(`Server listening on port: ${PORT}`);
-  //connectDB();
+    console.log(`Server listening on port: ${PORT}`);
+    connectDB();
 });
