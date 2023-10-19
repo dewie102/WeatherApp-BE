@@ -81,7 +81,7 @@ exports.add_favorite_to_user = async (req, res) => {
     user.favorites.push({ locationName: name, lat, lon });
     user.save();
 
-    res.send(`Updated users favorites: ${user}`);
+    res.send({ message: `Updated users favorites: ${user}` });
 };
 
 exports.get_user_favorites = async (req, res) => {
@@ -92,7 +92,7 @@ exports.get_user_favorites = async (req, res) => {
         return res.status(400).send({ error: "Invalid username ID" });
     }
 
-    res.send(user.favorites);
+    res.send({ favorites: user.favorites });
 };
 
 exports.delete_favorite_from_user = async (req, res) => {
@@ -107,7 +107,7 @@ exports.delete_favorite_from_user = async (req, res) => {
     user.favorites.splice(index, 1);
     user.save();
 
-    res.send("Deleted favorite");
+    res.send({ message: "Deleted favorite" });
 };
 
 exports.is_valid_token = async (req, res, next) => {
