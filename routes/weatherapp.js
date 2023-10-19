@@ -23,4 +23,10 @@ router.put(
     weatherappController.add_favorite_to_user
 );
 
+router.delete(
+    "/deletefavorite",
+    weatherappController.is_valid_token,
+    weatherappController.delete_favorite_from_user
+);
+
 module.exports = router;

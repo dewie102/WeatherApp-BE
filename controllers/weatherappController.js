@@ -95,6 +95,21 @@ exports.get_user_favorites = async (req, res) => {
     res.send(user.favorites);
 };
 
+exports.delete_favorite_from_user = async (req, res) => {
+    const { id, name } = req.body;
+
+    const user = await User.findById(id);
+    if (!user) {
+        return res.status(400).send({ error: "Invalid username ID" });
+    }
+
+    const index = user.favorites.findIndex((e) => e.locationName === name);
+    user.favorites.splice(index, 1);
+    user.save();
+
+    res.send("Deleted favorite");
+};
+
 exports.is_valid_token = async (req, res, next) => {
     let token;
     if (Object.hasOwn(req.body, "token")) {
