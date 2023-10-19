@@ -59,3 +59,58 @@ exports.login_user = async (req, res) => {
     );
     res.send({ user: { id: existingUser._id, username }, token });
 };
+
+exports.add_favorite_to_user = async (req, res) => {
+    const { id, name, lat, lon } = req.body;
+
+    if (!name && !lat && !lon) {
+        return res
+            .status(400)
+            .send({ error: "Missing name, lat or lon from request" });
+    }
+
+    const user = await User.findById(id);
+    if (!user) {
+        return res.status(400).send({ error: "Invalid username ID" });
+    }
+
+    if (user.favorites.some((e) => e.lat == lat && e.lon == lon)) {
+        return res.send("User already has location in favorites");
+    }
+
+    user.favorites.push({ locationName: name, lat, lon });
+    user.save();
+
+    res.send(`Updated users favorites: ${user}`);
+};
+
+exports.get_user_favorites = async (req, res) => {
+    const { id } = req.query;
+
+    const user = await User.findById(id);
+    if (!user) {
+        return res.status(400).send({ error: "Invalid username ID" });
+    }
+
+    res.send(user.favorites);
+};
+
+exports.is_valid_token = async (req, res, next) => {
+    let token;
+    if (Object.hasOwn(req.body, "token")) {
+        token = req.body.token;
+    } else if (Object.hasOwn(req.query, "token")) {
+        token = req.query.token;
+    } else {
+        return res.status(400).send({ error: "Token not provided" });
+    }
+
+    try {
+        const userInfo = await jwt.verify(token, process.env.JWT_KEY);
+        console.log(userInfo);
+    } catch (error) {
+        return res.status(400).send({ error: "Invalid token" });
+    }
+
+    next();
+};

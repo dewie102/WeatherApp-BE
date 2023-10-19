@@ -11,4 +11,16 @@ router.post("/createuser", weatherappController.create_user);
 
 router.post("/login", weatherappController.login_user);
 
+router.get(
+    "/getfavorites",
+    weatherappController.is_valid_token,
+    weatherappController.get_user_favorites
+);
+
+router.put(
+    "/updatefavorites",
+    weatherappController.is_valid_token,
+    weatherappController.add_favorite_to_user
+);
+
 module.exports = router;
