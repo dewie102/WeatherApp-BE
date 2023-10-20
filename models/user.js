@@ -7,8 +7,8 @@ const userSchema = new Schema({
     favorites: [
         {
             locationName: { type: String, unique: true, required: true },
-            lat: { type: Schema.Types.Decimal128, required: true },
-            lon: { type: Schema.Types.Decimal128, required: true },
+            lat: { type: String, required: true },
+            lon: { type: String, required: true },
         },
     ],
 });
