@@ -124,19 +124,17 @@ exports.get_photo_for_location = async (req, res) => {
     );
 
     const content = await response.json();
-    console.log(content);
 
     if (Object.hasOwn(content, "errors")) {
         return res.status(400).send(content);
     }
 
     const results = content.results;
-    console.log(results);
     const photoURL = getRandomImageFromArray(results);
-    if (!photoURL) {
-        return res
-            .status(400)
-            .send({ error: "Something went wrong with getting a photo" });
+    if (!photoURL && results.length > 0) {
+        return res.status(400).send({
+            error: "Something went wrong with getting a random photo",
+        });
     }
 
     return res.send({ url: photoURL });
