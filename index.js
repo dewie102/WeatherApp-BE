@@ -4,6 +4,7 @@ const cors = require("cors");
 const weatherAppRouter = require("./routes/weatherapp");
 const openWeatherRouter = require("./routes/openweather");
 const nationalAlertsRouter = require("./routes/nationalalerts");
+const unsplashRouter = require("./routes/unsplash");
 const { connectDB } = require("./utilities/db");
 
 const app = express();
@@ -16,6 +17,7 @@ app.use(cors());
 app.use("/api/weatherapp", weatherAppRouter);
 app.use("/api/weatherapp/openweather", openWeatherRouter);
 app.use("/api/weatherapp/nationalalerts", nationalAlertsRouter);
+app.use("/api/weatherapp/unsplash", unsplashRouter);
 
 app.get("/", (req, res) => {
     res.send("Hello World");
