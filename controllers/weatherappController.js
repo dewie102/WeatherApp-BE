@@ -2,6 +2,8 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
+const unsplashURLBase = "https://api.unsplash.com";
+
 exports.create_user = async (req, res) => {
     const { username, password } = req.body;
 
@@ -110,6 +112,27 @@ exports.delete_favorite_from_user = async (req, res) => {
     res.send({ message: "Deleted favorite" });
 };
 
+exports.get_photo_for_location = async (req, res) => {
+    const { location } = req.query;
+
+    const response = await fetch(
+        `${unsplashURLBase}/search/photos?` +
+            `client_id=${process.env.UNSPLASH_API}&` +
+            `query=${location}`
+    );
+
+    const content = await response.json();
+    const results = content.results;
+    const photoURL = getRandomImageFromArray(results);
+    if (!photoURL) {
+        return res
+            .status(400)
+            .send({ error: "Something went wrong with getting a photo" });
+    }
+
+    return res.send({ url: photoURL });
+};
+
 exports.is_valid_token = async (req, res, next) => {
     let token;
     if (Object.hasOwn(req.body, "token")) {
@@ -129,3 +152,8 @@ exports.is_valid_token = async (req, res, next) => {
 
     next();
 };
+
+function getRandomImageFromArray(array) {
+    let randomIndex = Math.floor(Math.random() * array.length - 1);
+    return array[randomIndex]?.urls?.small;
+}

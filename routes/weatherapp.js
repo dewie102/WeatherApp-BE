@@ -29,4 +29,6 @@ router.delete(
     weatherappController.delete_favorite_from_user
 );
 
+router.get("/photo", weatherappController.get_photo_for_location);
+
 module.exports = router;
