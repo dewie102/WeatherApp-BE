@@ -6,7 +6,7 @@ const userSchema = new Schema({
     password: { type: String, required: true },
     favorites: [
         {
-            locationName: { type: String, unique: true, required: true },
+            locationName: { type: String, required: true },
             lat: { type: String, required: true },
             lon: { type: String, required: true },
         },
