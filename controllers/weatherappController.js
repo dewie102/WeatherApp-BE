@@ -115,6 +115,8 @@ exports.delete_favorite_from_user = async (req, res) => {
 exports.get_photo_for_location = async (req, res) => {
     const { location } = req.query;
 
+    console.log(location);
+
     const response = await fetch(
         `${unsplashURLBase}/search/photos?` +
             `client_id=${process.env.UNSPLASH_API}&` +
@@ -122,7 +124,9 @@ exports.get_photo_for_location = async (req, res) => {
     );
 
     const content = await response.json();
+    console.log(content);
     const results = content.results;
+    console.log(results);
     const photoURL = getRandomImageFromArray(results);
     if (!photoURL) {
         return res
@@ -154,6 +158,7 @@ exports.is_valid_token = async (req, res, next) => {
 };
 
 function getRandomImageFromArray(array) {
+    console.log(array);
     let randomIndex = Math.floor(Math.random() * array.length - 1);
     return array[randomIndex]?.urls?.small;
 }
