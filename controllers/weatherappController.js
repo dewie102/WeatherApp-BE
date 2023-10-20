@@ -75,13 +75,13 @@ exports.add_favorite_to_user = async (req, res) => {
     }
 
     if (user.favorites.some((e) => e.lat == lat && e.lon == lon)) {
-        return res.send("User already has location in favorites");
+        return res.send({ error: "User already has location in favorites" });
     }
 
     user.favorites.push({ locationName: name, lat, lon });
     user.save();
 
-    res.send({ message: `Updated users favorites: ${user}` });
+    res.send({ message: `Updated users favorites`, user });
 };
 
 exports.get_user_favorites = async (req, res) => {
