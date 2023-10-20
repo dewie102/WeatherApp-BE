@@ -125,6 +125,11 @@ exports.get_photo_for_location = async (req, res) => {
 
     const content = await response.json();
     console.log(content);
+
+    if (Object.hasOwn(content, "errors")) {
+        return res.status(400).send(content);
+    }
+
     const results = content.results;
     console.log(results);
     const photoURL = getRandomImageFromArray(results);
